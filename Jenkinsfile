@@ -4,28 +4,26 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out the code from GitHub'
-                git 'https://github.com/Venkatesh101997/nginx-deployment.git'
+                // Check out the code from GitHub
+                git url: 'https://github.com/Venkatesh101997/nginx-deployment.git', branch: 'main'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                echo 'Installing dependencies using npm'
+                // Install dependencies using npm for Node.js projects
                 sh 'npm install'
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building the application (add your build steps here)'
                 // Add build steps if needed
             }
         }
 
         stage('Deploy to Nginx') {
             steps {
-                echo 'Copying files to Nginx path'
                 // Copy files to Nginx path (adjust paths accordingly)
                 sh 'rsync -av --delete ./ /usr/share/nginx/'
             }
@@ -33,7 +31,6 @@ pipeline {
 
         stage('Restart Nginx') {
             steps {
-                echo 'Restarting Nginx (if needed)'
                 // Restart Nginx if needed
                 sh 'sudo systemctl restart nginx'
             }
