@@ -12,7 +12,9 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 // Install dependencies using npm for Node.js projects
-                sh 'npm install'
+                script {
+                    sh 'npm install'
+                }
             }
         }
 
@@ -25,14 +27,18 @@ pipeline {
         stage('Deploy to Nginx') {
             steps {
                 // Copy files to Nginx path (adjust paths accordingly)
-                sh 'rsync -av --delete ./ /usr/share/nginx/'
+                script {
+                    sh 'rsync -av --delete ./ /usr/share/nginx/'
+                }
             }
         }
 
         stage('Restart Nginx') {
             steps {
                 // Restart Nginx if needed
-                sh 'sudo systemctl restart nginx'
+                script {
+                    sh 'sudo systemctl restart nginx'
+                }
             }
         }
     }
