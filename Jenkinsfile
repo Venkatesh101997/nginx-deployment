@@ -1,46 +1,48 @@
 pipeline {
     agent any
-    
+
     stages {
-        stage('Checkout SCM') {
+        stage('Checkout') {
             steps {
-                script {
-                    checkout scm
-                }
+                // Check out the code from GitHub
+                git 'https://github.com/Venkatesh101997/nginx-deployment.git'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                // Install dependencies using npm for Node.js projects
+                sh 'npm install'
             }
         }
 
         stage('Build') {
             steps {
-                script {
-                    // Your build steps here
-                    echo 'Building...'
-                }
+                // Add build steps if needed
             }
         }
 
-        stage('Install Nginx and Deploy') {
+        stage('Deploy to Nginx') {
             steps {
-                script {
-                    // Install Nginx based on the package manager of your Linux distribution
-                    sh 'sudo yum install -y nginx'  // For CentOS/RHEL
-                    // OR
-                    // sh 'sudo apt-get update && sudo apt-get install -y nginx'  // For Debian/Ubuntu
+                // Copy files to Nginx path (adjust paths accordingly)
+                sh 'rsync -av --delete ./ /usr/share/nginx/'
+            }
+        }
 
-                    // Deploy to the default Nginx deployment path
-                    sh 'cp -r /var/lib/jenkins/workspace/build/* /usr/share/nginx/html/'
-
-                    // Start Nginx
-                    sh 'sudo systemctl start nginx'  // Use 'service nginx start' for older systems
-                }
+        stage('Restart Nginx') {
+            steps {
+                // Restart Nginx if needed
+                sh 'sudo systemctl restart nginx'
             }
         }
     }
-    
+
     post {
-        always {
-            // Clean up workspace after the build
-            cleanWs()
+        success {
+            // Additional success actions or notifications
+        }
+        failure {
+            // Additional failure actions or notifications
         }
     }
 }
