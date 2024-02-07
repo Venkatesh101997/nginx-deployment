@@ -5,7 +5,9 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Check out the code from GitHub
-                git url: 'https://github.com/Venkatesh101997/nginx-deployment.git', branch: 'main'
+                script {
+                    git url: 'https://github.com/Venkatesh101997/nginx-deployment.git', branch: 'main'
+                }
             }
         }
 
@@ -21,6 +23,10 @@ pipeline {
         stage('Build') {
             steps {
                 // Add build steps if needed
+                script {
+                    echo 'Building the application'
+                    // Add build steps here
+                }
             }
         }
 
