@@ -4,44 +4,41 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // Check out the code from GitHub
                 script {
-                    git url: 'https://github.com/Venkatesh101997/nginx-deployment.git', branch: 'main'
+                    // Provide credentials if needed
+                    git credentialsId: 'your-credentials-id', url: 'https://github.com/Venkatesh101997/nginx-deployment.git', branch: 'main'
                 }
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                // Install dependencies using npm for Node.js projects
                 script {
-                    sh 'npm install'
+                    sh 'npm install' // Adjust for your Node.js project
                 }
             }
         }
 
         stage('Build') {
             steps {
-                // Add build steps if needed
                 script {
                     echo 'Building the application'
-                    // Add build steps here
+                    // Add your actual build steps here
                 }
             }
         }
 
         stage('Deploy to Nginx') {
             steps {
-                // Copy files to Nginx path (adjust paths accordingly)
                 script {
-                    sh 'rsync -av --delete ./ /usr/share/nginx/'
+                    // Adjust the paths accordingly
+                    sh 'rsync -av --delete --exclude="node_modules" ./ /usr/share/nginx/'
                 }
             }
         }
 
         stage('Restart Nginx') {
             steps {
-                // Restart Nginx if needed
                 script {
                     sh 'sudo systemctl restart nginx'
                 }
@@ -53,6 +50,10 @@ pipeline {
         success {
             echo 'Deployment successful'
             // Additional success actions or notifications
+        }
+        unstable {
+            echo 'Deployment unstable - check logs'
+            // Additional actions for unstable build
         }
         failure {
             echo 'Deployment failed'
