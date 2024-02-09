@@ -5,7 +5,6 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    // Provide credentials if needed
                     git credentialsId: 'your-credentials-id', url: 'https://github.com/Venkatesh101997/nginx-deployment.git', branch: 'main'
                 }
             }
@@ -14,7 +13,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    sh 'npm install' // Adjust for your Node.js project
+                    sh 'npm install'
                 }
             }
         }
@@ -23,7 +22,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building the application'
-                    // Add your actual build steps here
+                    // Add your actual build steps here (e.g., npm run build)
                 }
             }
         }
@@ -31,7 +30,6 @@ pipeline {
         stage('Deploy to Nginx') {
             steps {
                 script {
-                    // Adjust the paths accordingly
                     sh 'rsync -av --delete --exclude="node_modules" ./ /usr/share/nginx/'
                 }
             }
