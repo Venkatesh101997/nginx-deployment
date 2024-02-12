@@ -1,11 +1,17 @@
 pipeline {
     agent any
 
+    tools {
+        // Specify the NodeJS installation to use
+        nodejs 'NodeJS 18.18.2'
+    }
+
     stages {
         stage('Checkout') {
             steps {
                 script {
-                    git credentialsId: 'your-credentials-id', url: 'https://github.com/Venkatesh101997/nginx-deployment.git', branch: 'main'
+                    // Git clone without credentials (for public repositories)
+                    git url: 'https://github.com/Venkatesh101997/nginx-deployment.git', branch: 'main'
                 }
             }
         }
@@ -13,6 +19,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
+                    // npm install using the configured NodeJS installation
                     sh 'npm install'
                 }
             }
@@ -22,7 +29,7 @@ pipeline {
             steps {
                 script {
                     echo 'Building the application'
-                    // Add your actual build steps here (e.g., npm run build)
+                    // Add your actual build steps here
                 }
             }
         }
@@ -30,6 +37,7 @@ pipeline {
         stage('Deploy to Nginx') {
             steps {
                 script {
+                    // Adjust the paths accordingly
                     sh 'rsync -av --delete --exclude="node_modules" ./ /usr/share/nginx/'
                 }
             }
