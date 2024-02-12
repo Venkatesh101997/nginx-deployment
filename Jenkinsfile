@@ -3,7 +3,7 @@ pipeline {
 
     tools {
         // Specify the NodeJS installation to use
-        nodejs 'NodeJS 18.18.2'
+        nodejs 'nodejs' // Use 'nodejs' instead of 'NodeJS 18.18.2'
     }
 
     stages {
