@@ -16,14 +16,7 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                script {
-                    // npm install using the configured NodeJS installation
-                    sh 'npm install'
-                }
-            }
-        }
+ 
 
         stage('Build') {
             steps {
