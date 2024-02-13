@@ -31,7 +31,7 @@ pipeline {
             steps {
                 script {
                     // Adjust the paths accordingly
-                    sh 'rsync -av --delete --exclude="node_modules" ./ /usr/share/nginx/'
+                    sh 'sudo rsync -av --delete --exclude="node_modules" ./ /usr/share/nginx/'
                 }
             }
         }
