@@ -1,63 +1,39 @@
 pipeline {
-    agent any
-
-    tools {
-        // Specify the NodeJS installation to use
-        nodejs 'nodejs' // Use 'nodejs' instead of 'NodeJS 18.18.2'
-    }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                script {
-                    // Git clone without credentials (for public repositories)
-                    git url: 'https://github.com/Venkatesh101997/nginx-deployment.git', branch: 'main'
-                }
-            }
+    agent {
+        docker {
+            image 'node:6-alpine'
+            args '-p 3000:3000'
         }
-
- 
-
+    }
+    
+    environment {
+        CI = 'true'
+    }
+    
+    stages {
         stage('Build') {
             steps {
-                script {
-                    echo 'Building the application'
-                    // Add your actual build steps here
-                }
+                sh 'npm install'
             }
         }
-
-         stage('Deploy to Nginx') {
-             steps {
-                 script {
-                    // Adjust the paths accordingly
-                     sh 'echo <password> | sudo -S rsync -av --delete --exclude="node_modules" ./ /usr/share/nginx/'
-                 }
-             } 
-         }
-
-
-        stage('Restart Nginx') {
+        
+        stage('Test') {
+            steps {
+                sh './jenkins/scripts/test.sh'
+            }
+        }
+        
+        stage('Deliver') {
             steps {
                 script {
-                    sh 'sudo systemctl restart nginx'
+                    // Adjust the paths accordingly
+                    sh 'sudo -S rsync -av --delete --exclude="node_modules" ./ /usr/share/nginx/' << 'EOF'
+your_sudo_password
+EOF
+                    input message: 'Finished using the web site? (Click "Proceed" to continue)'
+                    sh './jenkins/scripts/kill.sh'
                 }
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'Deployment successful'
-            // Additional success actions or notifications
-        }
-        unstable {
-            echo 'Deployment unstable - check logs'
-            // Additional actions for unstable build
-        }
-        failure {
-            echo 'Deployment failed'
-            // Additional failure actions or notifications
         }
     }
 }
