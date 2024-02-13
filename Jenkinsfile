@@ -8,43 +8,52 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
+                echo 'Checking out code...'
                 script {
                     git url: 'https://github.com/Venkatesh101997/nginx-deployment.git', branch: 'main'
                 }
+                echo 'Code checkout complete.'
             }
         }
 
         stage('Install Dependencies') {
             steps {
+                echo 'Installing npm dependencies...'
                 script {
                     sh 'npm install'
                 }
+                echo 'npm install complete.'
             }
         }
 
         stage('Build') {
             steps {
+                echo 'Building the application...'
                 script {
-                    echo 'Building the application'
                     // Add your actual build steps here
                 }
+                echo 'Build complete.'
             }
         }
 
         stage('Deploy to Nginx') {
             steps {
+                echo 'Deploying to Nginx...'
                 script {
                     // Adjust the paths accordingly
                     sh 'rsync -av --delete --exclude="node_modules" ./ /usr/share/nginx/'
                 }
+                echo 'Deployment complete.'
             }
         }
 
         stage('Restart Nginx') {
             steps {
+                echo 'Restarting Nginx...'
                 script {
                     sh 'sudo systemctl restart nginx'
                 }
+                echo 'Nginx restart complete.'
             }
         }
     }
