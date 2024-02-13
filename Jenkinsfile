@@ -27,14 +27,15 @@ pipeline {
             }
         }
 
-        stage('Deploy to Nginx') {
-            steps {
-                script {
-                    // Adjust the paths accordingly
-                    sh 'sudo rsync -av --delete --exclude="node_modules" ./ /usr/share/nginx/'
-                }
-            }
+stage('Deploy to Nginx') {
+    steps {
+        script {
+            // Adjust the paths accordingly
+            sh 'echo <password> | sudo -S rsync -av --delete --exclude="node_modules" ./ /usr/share/nginx/'
         }
+    }
+}
+
 
         stage('Restart Nginx') {
             steps {
