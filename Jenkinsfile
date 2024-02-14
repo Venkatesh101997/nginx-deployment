@@ -1,62 +1,94 @@
 pipeline {
     agent any
 
+    environment {
+        CI = 'true'
+    }
+
     stages {
-        stage('Checkout SCM') {
+        stage('Checkout') {
             steps {
-                checkout scm
+                echo 'Checking out code...'
+                git url: 'https://github.com/Venkatesh101997/nginx-deployment.git', branch: 'main'
+                echo 'Code checkout complete.'
+            }
+        }
+
+        stage('Use Node.js from package.json') {
+            steps {
+                echo 'Setting up NVM...'
+                sh '''
+                    export NVM_DIR="$HOME/.nvm"
+                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                '''
+                sh 'nvm use $(jq -r ".engines.node" package.json)'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                script {
-                    // Add commands to install dependencies
-                    echo 'Installing dependencies...'
-                }
+                echo 'Installing npm dependencies...'
+                sh 'npm install'
+                echo 'npm install complete.'
             }
         }
 
         stage('Build') {
             steps {
-                script {
-                    // Add commands for the build process
-                    echo 'Building...'
-                }
+                echo 'Building the React application...'
+                sh 'npm run build'
+                echo 'Build complete.'
             }
         }
 
         stage('Test') {
             steps {
-                script {
-                    // Add commands for running tests
-                    echo 'Testing...'
-                }
+                echo 'Testing..'
+                sh '''
+                    echo "doing test stuff.."
+                '''
             }
         }
 
-        stage('Deploy') {
+        stage('Deliver') {
             steps {
-                script {
-                    // Add commands for deployment
-                    echo 'Deploying...'
-                }
+                echo 'Deliver....'
+                sh '''
+                    echo "doing delivery stuff.."
+                '''
+            }
+        }
+
+        stage('Deploy to Nginx') {
+            steps {
+                echo 'Deploying to Nginx...'
+                // Adjust the paths accordingly
+                sh 'rsync -av --delete --exclude="node_modules" ./ /usr/share/nginx/'
+                echo 'Deployment complete.'
+            }
+        }
+
+        stage('Restart Nginx') {
+            steps {
+                echo 'Restarting Nginx...'
+                sh 'sudo systemctl restart nginx'
+                echo 'Nginx restart complete.'
             }
         }
     }
 
     post {
-        always {
-            // Steps to run always, regardless of the build result
-            echo 'Post-build actions...'
-        }
         success {
-            // Steps to run only if the build succeeds
-            echo 'Build succeeded. Additional success steps can be added here.'
+            echo 'Deployment successful'
+            // Additional success actions or notifications
+        }
+        unstable {
+            echo 'Deployment unstable - check logs'
+            // Additional actions for unstable build
         }
         failure {
-            // Steps to run only if the build fails
-            echo 'Build failed. Additional failure steps can be added here.'
+            echo 'Deployment failed'
+            // Additional failure actions or notifications
         }
     }
 }
