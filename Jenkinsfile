@@ -2,27 +2,17 @@ pipeline {
     agent any
 
     stages {
-        stage('Declarative: Checkout SCM') {
+        stage('Checkout SCM') {
             steps {
                 checkout scm
-            }
-        }
-
-        stage('Use Node.js from package.json') {
-            steps {
-                echo 'Setting up NVM...'
-                script {
-                    // Define the NodeJS installation name (make sure it matches the one in your Jenkins configuration)
-                    def nodejsInstallation = tool name: 'NVM', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
-                    env.PATH = "${nodejsInstallation}/bin:${env.PATH}"
-                }
             }
         }
 
         stage('Install Dependencies') {
             steps {
                 script {
-                    sh 'npm install'
+                    // Add commands to install dependencies
+                    echo 'Installing dependencies...'
                 }
             }
         }
@@ -30,7 +20,8 @@ pipeline {
         stage('Build') {
             steps {
                 script {
-                    sh 'npm run build'
+                    // Add commands for the build process
+                    echo 'Building...'
                 }
             }
         }
@@ -38,28 +29,34 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    sh 'npm test'
+                    // Add commands for running tests
+                    echo 'Testing...'
                 }
             }
         }
 
-        stage('Deliver') {
+        stage('Deploy') {
             steps {
-                // Add steps for delivering your application
-                // For example, deploying to a server or packaging the application
-            }
-        }
-
-        stage('Declarative: Post Actions') {
-            steps {
-                echo 'Deployment failed'
+                script {
+                    // Add commands for deployment
+                    echo 'Deploying...'
+                }
             }
         }
     }
 
     post {
         always {
-            // Add cleanup steps or notifications that need to be executed regardless of the pipeline result
+            // Steps to run always, regardless of the build result
+            echo 'Post-build actions...'
+        }
+        success {
+            // Steps to run only if the build succeeds
+            echo 'Build succeeded. Additional success steps can be added here.'
+        }
+        failure {
+            // Steps to run only if the build fails
+            echo 'Build failed. Additional failure steps can be added here.'
         }
     }
 }
