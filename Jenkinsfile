@@ -2,98 +2,42 @@ pipeline {
     agent any
 
     environment {
-        CI = 'true'
-        NVM_DIR = "$HOME/.nvm"
-    }
-
-    tools {
-        nodejs 'node' // Assuming you have a NodeJS tool installation named 'node' in Jenkins
-        git 'git' // Assuming you have a Git tool installation named 'git' in Jenkins
+        // Define the NodeJS tool installation named 'nodejs'
+        nodejs = tool 'nodejs'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out code...'
-                checkout scm
-                echo 'Code checkout complete.'
-            }
-        }
-
-        stage('Use Node.js from package.json') {
-            steps {
-                echo 'Setting up NVM...'
-                sh '''
-                    [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                '''
-                sh 'nvm use $(jq -r ".engines.node" package.json)'
+                script {
+                    // Your Git checkout step for a public repository
+                    git url: 'https://github.com/Venkatesh101997/nginx-deployment.git'
+                }
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                echo 'Installing npm dependencies...'
-                sh 'npm install'
-                echo 'npm install complete.'
+                script {
+                    // Change to the directory where your package.json is located
+                    dir('path/to/your/app') {
+                        // Run npm install to install dependencies
+                        sh "${env.BUILD_ID} npm install"
+                    }
+                }
             }
         }
 
-        stage('Build') {
+        stage('Build and Deploy') {
             steps {
-                echo 'Building the React application...'
-                sh 'npm run build'
-                echo 'Build complete.'
-            }
-        }
+                script {
+                    // Customize your build and deploy steps here
+                    // For example, you can use 'npm run build' or other build commands
 
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-                sh '''
-                    echo "doing test stuff.."
-                '''
+                    // Assuming you have an Nginx server running, copy files to the Nginx web root
+                    sh "cp -r path/to/your/app /usr/share/nginx/html"
+                }
             }
-        }
-
-        stage('Deliver') {
-            steps {
-                echo 'Deliver....'
-                sh '''
-                    echo "doing delivery stuff.."
-                '''
-            }
-        }
-
-        stage('Deploy to Nginx') {
-            steps {
-                echo 'Deploying to Nginx...'
-                // Adjust the paths accordingly
-                sh 'rsync -av --delete --exclude="node_modules" ./ /usr/share/nginx/'
-                echo 'Deployment complete.'
-            }
-        }
-
-        stage('Restart Nginx') {
-            steps {
-                echo 'Restarting Nginx...'
-                sh 'sudo systemctl restart nginx'
-                echo 'Nginx restart complete.'
-            }
-        }
-    }
-
-    post {
-        success {
-            echo 'Deployment successful'
-            // Additional success actions or notifications
-        }
-        unstable {
-            echo 'Deployment unstable - check logs'
-            // Additional actions for unstable build
-        }
-        failure {
-            echo 'Deployment failed'
-            // Additional failure actions or notifications
         }
     }
 }
