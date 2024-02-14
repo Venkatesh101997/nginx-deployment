@@ -25,8 +25,28 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the application...'
-                // Add your actual build steps here
+                sh 'npm run lint'  // Run linters (if applicable)
+                sh 'npm test'      // Run unit tests
+                sh 'npm run build' // Transpile or bundle code
                 echo 'Build complete.'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+                sh '''
+                    echo "doing test stuff.."
+                '''
+            }
+        }
+
+        stage('Deliver') {
+            steps {
+                echo 'Deliver....'
+                sh '''
+                    echo "doing delivery stuff.."
+                '''
             }
         }
 
