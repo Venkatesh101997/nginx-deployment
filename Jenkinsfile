@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         // Define the NodeJS tool installation named 'nodejs'
-        nodejs = tool 'nodejs'
+        nodejs = tool 'NodeJS'
     }
 
     stages {
