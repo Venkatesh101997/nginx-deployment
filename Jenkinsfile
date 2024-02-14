@@ -3,13 +3,19 @@ pipeline {
 
     environment {
         CI = 'true'
+        NVM_DIR = "$HOME/.nvm"
+    }
+
+    tools {
+        nodejs 'node' // Assuming you have a NodeJS tool installation named 'node' in Jenkins
+        git 'git' // Assuming you have a Git tool installation named 'git' in Jenkins
     }
 
     stages {
         stage('Checkout') {
             steps {
                 echo 'Checking out code...'
-                git url: 'https://github.com/Venkatesh101997/nginx-deployment.git', branch: 'main'
+                checkout scm
                 echo 'Code checkout complete.'
             }
         }
@@ -18,7 +24,6 @@ pipeline {
             steps {
                 echo 'Setting up NVM...'
                 sh '''
-                    export NVM_DIR="$HOME/.nvm"
                     [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
                 '''
                 sh 'nvm use $(jq -r ".engines.node" package.json)'
