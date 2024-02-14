@@ -22,7 +22,7 @@ pipeline {
                     // Change to the directory where your package.json is located
                     dir('path/to/your/app') {
                         // Run npm install to install dependencies
-                        sh npm install"
+                        sh 'npm install'
                     }
                 }
             }
