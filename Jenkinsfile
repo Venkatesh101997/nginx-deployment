@@ -16,7 +16,9 @@ pipeline {
 
         stage('Use Node.js from package.json') {
             steps {
-                echo 'Switching to Node.js version from package.json...'
+                echo 'Setting up NVM...'
+                sh 'export NVM_DIR="$HOME/.nvm"'
+                sh '[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"'
                 sh 'nvm use $(jq -r ".engines.node" package.json)'
             }
         }
