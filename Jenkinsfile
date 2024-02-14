@@ -10,8 +10,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 script {
-                    // Your Git checkout step for a public repository
-                    git url: 'https://github.com/Venkatesh101997/nginx-deployment.git'
+                    // Your Git checkout step with explicit branch (e.g., main)
+                    git branch: 'main', url: 'https://github.com/Venkatesh101997/nginx-deployment.git'
                 }
             }
         }
@@ -22,7 +22,7 @@ pipeline {
                     // Change to the directory where your package.json is located
                     dir('path/to/your/app') {
                         // Run npm install to install dependencies
-                        sh "${env.BUILD_ID} npm install"
+                        sh npm install"
                     }
                 }
             }
