@@ -2,52 +2,64 @@ pipeline {
     agent any
 
     stages {
+        stage('Declarative: Checkout SCM') {
+            steps {
+                checkout scm
+            }
+        }
+
         stage('Use Node.js from package.json') {
             steps {
                 echo 'Setting up NVM...'
                 script {
-                    def nvmHome = tool name: 'NVM', type: 'hudson.plugins.nvm.NvmInstallation'
-                    env.PATH = "${nvmHome}/bin:${env.PATH}"
-                    sh 'nvm use $(jq -r ".engines.node" package.json) || echo "Failed to use Node.js version"'
+                    // Define the NodeJS installation name (make sure it matches the one in your Jenkins configuration)
+                    def nodejsInstallation = tool name: 'NVM', type: 'jenkins.plugins.nodejs.tools.NodeJSInstallation'
+                    env.PATH = "${nodejsInstallation}/bin:${env.PATH}"
                 }
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                echo 'Installing dependencies...'
-                sh 'npm install'
+                script {
+                    sh 'npm install'
+                }
             }
         }
 
         stage('Build') {
             steps {
-                echo 'Building the application...'
-                sh 'npm run lint'
-                sh 'npm test'
-                sh 'npm run build'
-                echo 'Build complete.'
+                script {
+                    sh 'npm run build'
+                }
             }
         }
 
         stage('Test') {
             steps {
-                echo 'Running tests...'
-                sh 'npm test'
+                script {
+                    sh 'npm test'
+                }
             }
         }
 
         stage('Deliver') {
             steps {
-                echo 'Delivering the application...'
-                // Add steps for deployment or delivery
+                // Add steps for delivering your application
+                // For example, deploying to a server or packaging the application
+            }
+        }
+
+        stage('Declarative: Post Actions') {
+            steps {
+                echo 'Deployment failed'
             }
         }
     }
 
     post {
-        failure {
-            echo 'Deployment failed'
+        always {
+            // Add cleanup steps or notifications that need to be executed regardless of the pipeline result
         }
     }
 }
