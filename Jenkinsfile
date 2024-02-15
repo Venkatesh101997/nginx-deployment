@@ -19,11 +19,11 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 script {
-                    // Change to the directory where your package.json is located
-                    dir('path/to/your/app') {
-                        // Run npm install to install dependencies
-                        sh 'npm install'
-                    }
+                    // Set the NPM registry if needed
+                    sh 'npm config set registry https://registry.npmjs.org/ --timeout=120000'
+                    
+                    // Install dependencies
+                    sh 'npm install'
                 }
             }
         }
@@ -31,13 +31,19 @@ pipeline {
         stage('Build and Deploy') {
             steps {
                 script {
-                    // Customize your build and deploy steps here
-                    // For example, you can use 'npm run build' or other build commands
+                    // Assuming NGINX path is /usr/share/nginx/html
+                    def nginxPath = '/usr/share/nginx/html'
 
-                    // Assuming you have an Nginx server running, copy files to the Nginx web root
-                    sh "cp -r path/to/your/app /usr/share/nginx/html"
+                    // Copy application files to NGINX path
+                    sh "cp -r * ${nginxPath}/"
                 }
             }
+        }
+    }
+
+    post {
+        always {
+            // Clean up any temporary files or perform other cleanup tasks
         }
     }
 }
