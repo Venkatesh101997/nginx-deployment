@@ -44,6 +44,7 @@ pipeline {
     post {
         always {
             // Clean up any temporary files or perform other cleanup tasks
+            echo 'Perform cleanup here...'
         }
     }
 }
